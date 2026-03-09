@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>实物展示文化墙设计提示词生成器</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --primary: #0284C7;
+      --primary-light: #38BDF8;
+      --primary-dark: #0369A1;
+      --success: #10B981;
+      --warning: #F59E0B;
+      --danger: #EF4444;
+      --bg-dark: #0F172A;
+      --bg-card: #1E293B;
+      --bg-item: #1F2937;
+      --text-primary: #FFFFFF;
+      --text-secondary: #94A3B8;
+      --border: rgba(148, 163, 184, 0.1);
+    }
+
+    html, body {
+      height: 100%;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", "思源黑体", sans-serif;
+      background: linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #0F172A 100%);
+      background-attachment: fixed;
+      color: var(--text-primary);
+      padding: 20px 0 100px;
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(circle at 20% 50%, rgba(2, 132, 199, 0.05) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .header {
+      text-align: center;
+      padding: 48px 20px 32px;
+    }
+
+    .header h1 {
+      font-size: clamp(24px, 6vw, 36px);
+      font-weight: 700;
+      margin-bottom: 12px;
+      background: linear-gradient(135deg, #38BDF8 0%, #06B6D4 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -0.5px;
+    }
+
+    .header .subtitle {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .header .feature-badge {
+      display: inline-block;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: #10B981;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      margin-top: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .input-section {
+      max-width: 920px;
+      margin: 0 auto 32px;
+      padding: 0 20px;
+    }
+
+    .input-wrap {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .input-wrap:hover {
+      border-color: rgba(2, 132, 199, 0.3);
+      box-shadow: 0 20px 60px rgba(2, 132, 199, 0.1);
+    }
+
+    .input-group {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .form-control {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .form-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .input-box,
+    .input-textarea {
+      padding: 13px 16px;
+      font-size: 15px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: rgba(15, 23, 42, 0.5);
+      color: var(--text-primary);
+      font-family: inherit;
+      transition: all 0.3s ease;
+    }
+
+    .input-box:focus,
+    .input-textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: rgba(15, 23, 42, 0.8);
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.1);
+    }
+
+    .input-textarea {
+      min-height: 120px;
+      resize: vertical;
+      max-height: 300px;
+      line-height: 1.6;
+    }
+
+    .char-count {
+      font-size: 12px;
+      color: var(--text-secondary);
+      text-align: right;
+      margin-top: 4px;
+    }
+
+    .button-group {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    @media (max-width: 640px) {
+      .button-group {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .btn {
+      padding: 14px 24px;
+      font-size: 15px;
+      font-weight: 600;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-family: inherit;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      color: white;
+      width: 100%;
+      box-shadow: 0 10px 30px rgba(2, 132, 199, 0.2);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 15px 40px rgba(2, 132, 199, 0.3);
+    }
+
+    .btn-primary:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    .btn-secondary {
+      background: rgba(2, 132, 199, 0.15);
+      color: var(--primary-light);
+      border: 1px solid rgba(2, 132, 199, 0.3);
+      padding: 12px 16px;
+      font-size: 14px;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(2, 132, 199, 0.25);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .result-section {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .result-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      padding: 0 4px;
+    }
+
+    .result-title {
+      font-size: 20px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .result-count {
+      background: rgba(2, 132, 199, 0.15);
+      border: 1px solid rgba(2, 132, 199, 0.3);
+      color: var(--primary-light);
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .result-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .result-item {
+      background: var(--bg-item);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .result-item::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, var(--primary), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .result-item:hover {
+      border-color: rgba(2, 132, 199, 0.3);
+      background: rgba(31, 41, 55, 0.9);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(2, 132, 199, 0.1);
+    }
+
+    .result-item:hover::before {
+      opacity: 1;
+    }
+
+    .result-number {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--primary-light);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+    }
+
+    .result-text {
+      font-size: 14px;
+      line-height: 1.8;
+      color: var(--text-primary);
+      word-break: break-word;
+      overflow-wrap: break-word;
+      min-height: 140px;
+      padding: 14px;
+      background: rgba(15, 23, 42, 0.3);
+      border-radius: 8px;
+      cursor: text;
+      user-select: text;
+      transition: all 0.3s;
+    }
+
+    .result-text:hover {
+      background: rgba(2, 132, 199, 0.08);
+    }
+
+    .result-actions {
+      display: flex;
+      gap: 8px;
+      justify-self: end;
+      margin-top: 8px;
+    }
+
+    .btn-copy,
+    .btn-delete {
+      flex: 1;
+      padding: 9px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      border: 1px solid rgba(2, 132, 199, 0.3);
+      background: rgba(2, 132, 199, 0.1);
+      color: var(--primary-light);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-family: inherit;
+    }
+
+    .btn-copy:hover {
+      background: rgba(2, 132, 199, 0.2);
+      border-color: rgba(2, 132, 199, 0.5);
+      transform: translateY(-1px);
+    }
+
+    .btn-copy.copied {
+      background: rgba(16, 185, 129, 0.2);
+      color: var(--success);
+      border-color: rgba(16, 185, 129, 0.4);
+    }
+
+    .btn-delete {
+      background: rgba(239, 68, 68, 0.1);
+      color: #FCA5A5;
+      border-color: rgba(239, 68, 68, 0.2);
+    }
+
+    .btn-delete:hover {
+      background: rgba(239, 68, 68, 0.2);
+      border-color: rgba(239, 68, 68, 0.4);
+    }
+
+    .batch-actions {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+      margin-top: 32px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+    }
+
+    .btn-batch {
+      padding: 12px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      border-radius: 10px;
+      border: 1px solid rgba(2, 132, 199, 0.3);
+      background: rgba(2, 132, 199, 0.1);
+      color: var(--primary-light);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-family: inherit;
+    }
+
+    .btn-batch:hover {
+      background: rgba(2, 132, 199, 0.2);
+      border-color: rgba(2, 132, 199, 0.5);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(2, 132, 199, 0.15);
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: var(--bg-item);
+      color: var(--text-primary);
+      padding: 14px 20px;
+      border-radius: 10px;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-left: 3px solid var(--success);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      animation: slideIn 0.3s ease-out;
+      z-index: 1000;
+      max-width: 400px;
+    }
+
+    .toast.error {
+      border-left-color: var(--danger);
+      border-color: rgba(239, 68, 68, 0.3);
+    }
+
+    .toast.warning {
+      border-left-color: var(--warning);
+      border-color: rgba(245, 158, 11, 0.3);
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateX(420px);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes slideOut {
+      to {
+        transform: translateX(420px);
+        opacity: 0;
+      }
+    }
+
+    .toast.hide {
+      animation: slideOut 0.3s ease-out forwards;
+    }
+
+    #copyBuffer {
+      position: absolute;
+      left: -9999px;
+      top: -9999px;
+    }
+
+    @media (max-width: 640px) {
+      .result-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+      }
+
+      .toast {
+        right: 12px;
+        left: 12px;
+        bottom: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <textarea id="copyBuffer"></textarea>
+
+  <div class="header">
+    <h1>🎖 实物展示文化墙设计提示词生成器</h1>
+    <p class="subtitle">专业实物展示文化墙设计，支持产品、工具、奖杯、奖牌等真实物体展示</p>
+    <div class="feature-badge">✓ 20组独特方案 | 专业级提示词</div>
+  </div>
+
+  <div class="input-section">
+    <div class="input-wrap">
+      <div class="input-group">
+        <div class="form-control">
+          <label class="form-label" for="spaceInput">空间类型</label>
+          <input
+            id="spaceInput"
+            class="input-box"
+            type="text"
+            placeholder="例如：企业展示厅、品牌体验馆、零售空间、教育机构"
+            maxlength="100"
+          />
+        </div>
+
+        <div class="form-control">
+          <label class="form-label" for="themeInput">文化墙主题</label>
+          <input
+            id="themeInput"
+            class="input-box"
+            type="text"
+            placeholder="例如：企业荣誉展示、产品发展演变、工具收藏展示"
+            maxlength="100"
+          />
+        </div>
+      </div>
+
+      <div class="form-control">
+        <label class="form-label" for="contentInput">内文及实物描述</label>
+        <textarea
+          id="contentInput"
+          class="input-textarea"
+          placeholder="输入文化墙内容及实物描述（产品名称、工具、奖杯、奖牌等实物信息，将完整保留在提示词中）"
+          maxlength="500"
+        ></textarea>
+        <div class="char-count">
+          <span id="charCount">0</span> / 500 字符
+        </div>
+      </div>
+
+      <div class="button-group">
+        <button id="generateBtn" class="btn btn-primary" onclick="app.generate()">
+          <span>✨</span> 生成20组提示词
+        </button>
+        <button id="clearBtn" class="btn btn-secondary" onclick="app.clear()" style="display:none;">
+          清除
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="result-section">
+    <div id="resultWrap"></div>
+  </div>
+
+  <script>
+    // ===== 实物展示文化墙设计配置 =====
+    const designConfigs = {
+      displayMethods: [
+        "采用玻璃展示盒嵌入墙体，实物完整展示，透明玻璃面清晰可见",
+        "金属挂架悬吊展示，产品倾斜陈列，增强视觉冲击力",
+        "木质底板托架展示，实物浮放于墙面上方，呈现悬浮感",
+        "亚克力透明托盘陈列，多件实物分层叠放，形成视觉层次",
+        "不锈钢墙面嵌入式支架，产品紧贴墙体，简洁专业",
+        "开放式网格展示架，实物自由组合排列，灵活多变",
+        "旋转展示座台嵌入，实物三百六十度可视，立体呈现",
+        "磁吸式金属板面展示，实物磁力固定，便于更换组合",
+        "弧形展示柜通透设计，实物蜂拥排列，形成视觉聚焦",
+        "壁挂式分层展示架，多个实物垂直排列，充分利用空间",
+        "透明亚克力柱体展示，实物立体陈列，从多角度展示",
+        "铝合金边框展示框，产品内嵌保护，高级质感十足",
+        "木质壁龛式展示，实物嵌入凹陷区域，空间感强",
+        "悬挂式玻璃夹具展示，实物悬空固定，轻盈飘逸",
+        "旋转转盘式展示，实物旋转陈列，动态感十足",
+        "阶梯式陈列展示台，实物按高度递进排列，视觉流畅",
+        "透光式背景展示墙，实物前景突出，背景辅助照明",
+        "展示柜门式设计，实物隐藏保护，可开启展示",
+        "悬浮式托架支撑，实物浮贴墙面，无支撑感视觉",
+        "多功能组合展示系统，柜格加架体灵活组合"
+      ],
+
+      displayItems: [
+        "展示工具、产品原型、技术装置及创新工具",
+        "陈列奖杯、奖牌、荣誉证书及获奖纪念品",
+        "放置企业旗舰产品、经典产品、新品展示",
+        "摆放行业工具、专业设备、技能工具集合",
+        "展示品牌合作伙伴礼品、商业合作纪念物",
+        "陈列发展历程中的标志性产品与工具",
+        "放置团队成就徽章、技能认证、专业资格证",
+        "展示产品演变过程中的实物原型与代表作",
+        "摆放客户礼品、合作纪念品、品牌周边产品",
+        "陈列技术创新成果、研发实物、专利产品",
+        "展示品牌荣誉证书、资质认证、行业奖项",
+        "陈列历史产品、第一代产品、里程碑产品",
+        "放置员工成就勋章、优秀员工奖牌",
+        "展示销售冠军杯、业绩奖杯、竞赛奖项",
+        "摆放产品包装盒、产品样品、产品模型",
+        "陈列合作协议、战略签约纪念品",
+        "展示产品获奖证书、设计奖、品牌奖",
+        "放置团队建设奖杯、管理创新奖",
+        "展示客户推荐信、满意度奖杯",
+        "陈列专业培训证书、技能等级认证"
+      ],
+
+      layouts: [
+        "上方标题占比20%、中部实物展示占比60%、下方文字信息占比20%，布局协调",
+        "左侧标题文字占比25%、右侧实物集中展示占比75%，左右分割明确",
+        "中心实物主展示占比50%、上下两侧辅助文字与小实物各占比25%，对称均衡",
+        "顶部装饰线占10%、中部实物群组占70%、底部品牌标识占20%，纵向分明",
+        "多个独立展示单元水平排列，每个单元内含实物加文字标签，模块化设计",
+        "实物按照大小渐进式排列，从小到大或从大到小，形成递进视觉动线",
+        "实物与文字交错排列，打破单调，形成视觉节奏感",
+        "中心焦点实物突出展示，周围环绕辅助文字与小实物，星形布局",
+        "实物分上中下三层陈列，每层文字标签清晰，纵深感强",
+        "实物与背景墙面形成主次对比，局部实物突出，整体文字压低",
+        "横向排列主要实物，纵向排列辅助实物，十字交叉布局",
+        "实物沿对角线递进排列，视觉从左上到右下流畅过渡",
+        "环形排列实物，中心为标题或logo，周围环绕产品展示",
+        "Z字形布局，实物按照Z形路径陈列，引导视线阅读",
+        "网格式分割，等比例网格中放置不同大小实物，秩序感强",
+        "左右对称布局，中心分割线，两侧实物对应陈列",
+        "瀑布式从上到下排列，实物逐级下沉，形成视觉流动",
+        "分层悬吊式，实物按高度分级展示，立体感十足",
+        "自由散点式，实物随意布置，营造活力感",
+        "聚焦式布局，重点实物放大突出，次要实物压缩陈列"
+      ],
+
+      lightings: [
+        "采用LED射灯精准打光，重点照亮各个实物，阴影对比明显",
+        "隐藏式顶部筒灯均匀照明，整面墙体亮度均衡，细节清晰可见",
+        "背景冷白光加前景暖光组合，实物层次分明，色彩还原精准",
+        "展示柜内置LED灯条照明，透明玻璃内部透光，呈现高级感",
+        "侧向洗墙灯强化立体质感，实物投影清晰，空间深度感强",
+        "点阵式LED灯珠点缀，强调关键实物位置，科技感十足",
+        "自然日光加辅助灯光混合，真实还原物品本色，色温准确",
+        "下方反向补光照射，消除上部阴影，实物细节完整呈现",
+        "高显色指数LED照明，色彩还原无偏差，产品本质特征显著",
+        "分区位照明设计，不同区域照度分级，重点区域照度更高",
+        "背光式透光照明，从背后透射光源，实物轮廓清晰",
+        "聚光筒灯精准打光，突出主体实物，暗部细节可见",
+        "环境光加重点补光混合，整体亮堂局部突出",
+        "顶部加侧面双向补光，立体感最强，投影效果好",
+        "暗部填充灯消除死角，阴影区域也有足够光照",
+        "渐变式色温照明，从冷色到暖色逐步过渡",
+        "高角度投射灯营造戏剧效果，产品更显高级感",
+        "低角度逆光照射，产生清晰轮廓光，质感表现力强",
+        "漫反射柔光箱照明，光线均匀温和，细节不失真",
+        "多角度组合灯位，全方位立体呈现，没有死角"
+      ],
+
+      colors: [
+        "高级灰加白色，简洁专业，实物色彩不被干扰",
+        "深灰加银白加点缀金色，高端商务感，凸显产品质感",
+        "纯白背景加黑色文字，极简风格，实物成为视觉焦点",
+        "浅米色加实木色，温暖克制，营造高级展示感",
+        "深蓝加白色加铜金，传统商务范儿，表达稳定可信",
+        "黑白灰极简色系，现代感强，突出实物本体",
+        "原木色加象牙白加点缀色，自然高级，和谐统一",
+        "深灰加冷白加钢铁银，科技冷调，强化产品品质感",
+        "浅灰加暖白加棕色调，柔和高级，视觉舒适度高",
+        "黑色基底加金色框线，奢华沉稳，突出荣誉感",
+        "深棕加米白加铜色，古朴典雅，展现品牌底蕴",
+        "蓝灰色加珍珠白加金，沉稳优雅，兼具现代感",
+        "冷白加深灰加银色，专业科技感，突出产品质感",
+        "浅米色加深灰加金，商务温暖，高级感足",
+        "纯黑加白色加铜金，高对比度，视觉冲击力强",
+        "灰白加钢铁银加黑，现代工业风，专业感强",
+        "象牙白加深棕加金，经典奢华，展现历史沉淀",
+        "浅灰加实木色加白，自然简约，温暖专业",
+        "深灰加冷白加玻璃质感，透明高级，现代前卫",
+        "黑白灰加金属质感，极简奢华，品质感十足"
+      ],
+
+      typography: [
+        "标题字号40-50厘米、副标题20-30厘米、产品标签10-15厘米，层级清晰",
+        "标题加粗黑体、副标题常规、产品标签细体，字重对比明显",
+        "所有文字为清晰可读的简体中文，标准规范无错别字",
+        "主标题居中对齐，产品标签靠近对应实物，指示清楚",
+        "字间距15毫米、行距35毫米，排版舒适不拥挤",
+        "重点文字加粗或改色，引导视线指向关键实物",
+        "产品名称与规格参数分行显示，信息层级明确",
+        "标题与实物保持15厘米以上间距，视觉呼吸感充足",
+        "文字采用黑体，笔画饱满易于辨识，清晰度最高",
+        "产品说明文字限制在20字以内，简洁有力，信息聚焦",
+        "标题用宋体或黑体，副标题用黑体，形成字体对比",
+        "文字颜色与背景高对比，最低70%灰度差，易于阅读",
+        "产品标签采用小号字体，与产品相邻紧凑排列",
+        "标题与副标题字号比例3:2，视觉关系清晰",
+        "关键词加粗处理，普通文字常规权重，突出重点",
+        "排版宽度不超过70厘米，确保观看时舒适度",
+        "产品信息标签位置固定，不随意移动，方便查看",
+        "使用简洁文案，避免复杂修饰词，强调产品特性",
+        "文字与实物比例协调，不过大也不过小",
+        "统一使用竖排或横排，不混搭不同排版方式"
+      ]
+    };
+
+    // ===== 复制管理器 =====
+    const copyManager = {
+      async useClipboardAPI(text) {
+        try {
+          await navigator.clipboard.writeText(text);
+          return true;
+        } catch (err) {
+          console.warn('Clipboard API failed:', err);
+          return false;
+        }
+      },
+
+      useExecCommand(text) {
+        try {
+          const textarea = document.getElementById('copyBuffer');
+          textarea.value = text;
+          textarea.select();
+          textarea.setSelectionRange(0, text.length);
+          const success = document.execCommand('copy');
+          textarea.value = '';
+          return success;
+        } catch (err) {
+          console.warn('ExecCommand failed:', err);
+          return false;
+        }
+      },
+
+      showManualCopy(text) {
+        const textarea = document.getElementById('copyBuffer');
+        textarea.value = text;
+        textarea.select();
+        textarea.setSelectionRange(0, text.length);
+        
+        const selection = window.getSelection();
+        const range = document.createRange();
+        range.selectNodeContents(textarea);
+        selection.removeAllRanges();
+        selection.addRange(range);
+        
+        return true;
+      },
+
+      async copy(text) {
+        const apiSuccess = await this.useClipboardAPI(text);
+        if (apiSuccess) {
+          return { success: true, method: 'clipboard-api' };
+        }
+
+        const execSuccess = this.useExecCommand(text);
+        if (execSuccess) {
+          return { success: true, method: 'exec-command' };
+        }
+
+        this.showManualCopy(text);
+        return { success: false, method: 'manual', needsHelp: true };
+      }
+    };
+
+    // ===== 应用主程序 =====
+    const app = {
+      prompts: [],
+
+      validate() {
+        const space = this.trim('spaceInput');
+        const theme = this.trim('themeInput');
+        const content = this.trim('contentInput');
+
+        if (!space) {
+          this.toast('请输入空间类型', 'error');
+          return false;
+        }
+        if (!theme) {
+          this.toast('请输入文化墙主题', 'error');
+          return false;
+        }
+        if (!content) {
+          this.toast('请输入内文及实物描述', 'error');
+          return false;
+        }
+        return true;
+      },
+
+      generate() {
+        if (!this.validate()) return;
+
+        const btn = document.getElementById('generateBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner"></span> 生成中...';
+
+        setTimeout(() => {
+          const space = this.trim('spaceInput');
+          const theme = this.trim('themeInput');
+          const content = this.trim('contentInput');
+
+          this.prompts = this.buildPrompts(space, theme, content);
+          this.render();
+
+          btn.disabled = false;
+          btn.innerHTML = '<span>✨</span> 生成20组提示词';
+          document.getElementById('clearBtn').style.display = 'inline-flex';
+
+          this.toast('✓ 已成功生成20组专业级提示词');
+        }, 400);
+      },
+
+      buildPrompts(space, theme, content) {
+        const prompts = [];
+
+        for (let i = 0; i < 20; i++) {
+          const displayMethod = designConfigs.displayMethods[i % designConfigs.displayMethods.length];
+          const displayItem = designConfigs.displayItems[i % designConfigs.displayItems.length];
+          const layout = designConfigs.layouts[i % designConfigs.layouts.length];
+          const lighting = designConfigs.lightings[i % designConfigs.lightings.length];
+          const color = designConfigs.colors[i % designConfigs.colors.length];
+          const typography = designConfigs.typography[i % designConfigs.typography.length];
+
+          const prompt = `${space}真实展示空间，${theme}实物展示文化墙，${displayMethod}。${displayItem}。内文内容为：${content}。${layout}。色彩采用${color}搭配，整体专业高级。文字排版：${typography}。所有文字为清晰可读的简体中文。照明方案为${lighting}。整体设计强调真实感、视觉冲击力、层次分明、信息明确，材质表现真实，可落地实施。正视角拍摄，镜头与文化墙保持垂直，整面文化墙完整出现在画面中，比例端正。文化墙正面完全展示。`;
+
+          prompts.push(prompt);
+        }
+
+        return prompts;
+      },
+
+      render() {
+        const wrap = document.getElementById('resultWrap');
+        wrap.innerHTML = '';
+
+        const header = document.createElement('div');
+        header.className = 'result-header';
+        header.innerHTML = `
+          <div class="result-title">
+            📋 生成结果
+            <span class="result-count">${this.prompts.length} 组提示词</span>
+          </div>
+        `;
+        wrap.appendChild(header);
+
+        const grid = document.createElement('div');
+        grid.className = 'result-grid';
+
+        this.prompts.forEach((prompt, idx) => {
+          const item = document.createElement('div');
+          item.className = 'result-item';
+          item.dataset.index = idx;
+
+          item.innerHTML = `
+            <div class="result-number">
+              提示词 ${idx + 1}
+            </div>
+            <div class="result-text">${this.escape(prompt)}</div>
+            <div class="result-actions">
+              <button class="btn-copy" onclick="app.copySingle(${idx})">复制</button>
+              <button class="btn-delete" onclick="app.delete(${idx})">删除</button>
+            </div>
+          `;
+
+          grid.appendChild(item);
+        });
+
+        wrap.appendChild(grid);
+
+        const batch = document.createElement('div');
+        batch.className = 'batch-actions';
+        batch.innerHTML = `
+          <button class="btn-batch" onclick="app.copyAll()">复制全部20组</button>
+          <button class="btn-batch" onclick="app.exportTxt()">导出为文本</button>
+          <button class="btn-batch" onclick="app.clearResults()">清空结果</button>
+        `;
+        wrap.appendChild(batch);
+      },
+
+      async copySingle(idx) {
+        const btns = document.querySelectorAll('.btn-copy');
+        const btn = btns[idx];
+        btn.disabled = true;
+        
+        const result = await copyManager.copy(this.prompts[idx]);
+        
+        if (result.success) {
+          btn.classList.add('copied');
+          btn.textContent = '已复制';
+          this.toast('✓ 复制成功');
+          
+          setTimeout(() => {
+            btn.classList.remove('copied');
+            btn.innerHTML = '复制';
+            btn.disabled = false;
+          }, 2000);
+        } else if (result.needsHelp) {
+          this.toast('✓ 文本已选中，按 Ctrl+C 复制', 'warning');
+          btn.innerHTML = '已选中';
+          btn.disabled = false;
+          
+          setTimeout(() => {
+            btn.innerHTML = '复制';
+          }, 3000);
+        } else {
+          this.toast('复制失败，请使用导出功能', 'error');
+          btn.disabled = false;
+        }
+      },
+
+      async copyAll() {
+        const text = this.prompts.map((p, i) => `【提示词${i + 1}】\n${p}`).join('\n\n');
+        const result = await copyManager.copy(text);
+        
+        if (result.success) {
+          this.toast('✓ 已复制全部20组提示词');
+        } else if (result.needsHelp) {
+          this.toast('✓ 文本已选中，按 Ctrl+C 复制全部', 'warning');
+        } else {
+          this.toast('复制失败，请使用导出功能', 'error');
+        }
+      },
+
+      exportTxt() {
+        const text = this.prompts.map((p, i) => `【提示词${i + 1}】\n${p}\n`).join('\n');
+        const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `实物展示文化墙提示词_${Date.now()}.txt`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        this.toast('✓ 文件已下载');
+      },
+
+      delete(idx) {
+        this.prompts.splice(idx, 1);
+        this.render();
+        this.toast('已删除该提示词');
+      },
+
+      clearResults() {
+        if (confirm('确认要清空所有结果吗？')) {
+          this.prompts = [];
+          document.getElementById('resultWrap').innerHTML = '';
+          this.toast('已清空所有结果');
+        }
+      },
+
+      clear() {
+        document.getElementById('spaceInput').value = '';
+        document.getElementById('themeInput').value = '';
+        document.getElementById('contentInput').value = '';
+        document.getElementById('charCount').textContent = '0';
+        document.getElementById('clearBtn').style.display = 'none';
+        this.prompts = [];
+        document.getElementById('resultWrap').innerHTML = '';
+      },
+
+      trim(id) {
+        return document.getElementById(id).value.trim().replace(/\s+/g, ' ');
+      },
+
+      escape(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+      },
+
+      toast(msg, type = 'success') {
+        const toast = document.createElement('div');
+        toast.className = `toast ${type === 'error' ? 'error' : type === 'warning' ? 'warning' : ''}`;
+        toast.textContent = msg;
+        document.body.appendChild(toast);
+
+        setTimeout(() => {
+          toast.classList.add('hide');
+          setTimeout(() => document.body.removeChild(toast), 300);
+        }, 3000);
+      }
+    };
+
+    document.getElementById('contentInput').addEventListener('input', (e) => {
+      document.getElementById('charCount').textContent = e.target.value.length;
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.ctrlKey && e.key === 'Enter') app.generate();
+    });
+  </script>
+</body>
+</html>
